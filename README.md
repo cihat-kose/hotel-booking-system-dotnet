@@ -1,11 +1,11 @@
-# gokstad-arbeidskrav2-hotellbookingsystem
+# gokstad-arbeidskrav2-hotelbookingsystem
 
 This repository contains my Arbeidskrav 2 C# console project for a hotel booking system.
 
 ## Project folder
 The main project is located in:
 
-[HotellBookingSystem](HotellBookingSystem)
+[HotelBookingSystem](HotellBookingSystem)
 
 ## Documentation
 - [Project README](HotellBookingSystem/README.md)
