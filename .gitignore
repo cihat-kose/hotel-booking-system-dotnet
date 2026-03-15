@@ -1,0 +1,16 @@
+bin/
+obj/
+.dotnet/
+
+.idea/
+*.sln.iml
+
+*.user
+*.rsuser
+*.suo
+
+*.tmp
+*.temp
+*.log
+.DS_Store
+Thumbs.db
