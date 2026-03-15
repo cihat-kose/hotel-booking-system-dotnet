@@ -1,8 +1,8 @@
-# Hotell Booking System
+# Hotel Booking System
 
 ## Description
 
-HotellBookingSystem is a console-based hotel booking system made for [Arbeidskrav 2](Arbeidskrav2_HotellSystem.pdf).
+HotelBookingSystem is a console-based hotel booking system made for [Arbeidskrav 2](Arbeidskrav2_HotellSystem.pdf).
 The project is written in C# and focuses on basic hotel management features, object-oriented programming, and simple startup testing.
 
 ## Features
@@ -23,7 +23,7 @@ The project is written in C# and focuses on basic hotel management features, obj
 - `Models/` - Contains the main domain classes such as hotel, room, guest, and booking
 - `Payments/` - Contains payment-related classes and interface
 - `Tests/` - Contains simple test code that runs at startup
-- `UML_HotellBookingSystem.pdf` - UML diagram for the project
+- `UML_HotelBookingSystem.pdf` - UML diagram for the project
 
 ## OOP concepts used
 
@@ -75,7 +75,7 @@ When the program starts, the simple tests run first. After that, the console men
 
 ## UML
 
-The UML diagram for the project is included in the root folder as [UML_HotellBookingSystem.pdf](UML_HotellBookingSystem.pdf).
+The UML diagram for the project is included in the root folder as [UML_HotelBookingSystem.pdf](UML_HotelBookingSystem.pdf).
 
 ## AI usage
 
