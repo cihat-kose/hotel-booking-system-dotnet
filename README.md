@@ -5,7 +5,7 @@ This repository contains my Arbeidskrav 2 C# console project for a hotel booking
 ## Project folder
 The main project is located in:
 
-[HotelBookingSystem](HotellBookingSystem)
+HotelBookingSystem
 
 ## Documentation
 - Project README
