@@ -8,7 +8,7 @@ The main project is located in:
 [HotelBookingSystem](HotellBookingSystem)
 
 ## Documentation
-- [Project README](HotellBookingSystem/README.md)
-- [AI prompt documentation](HotellBookingSystem/AI_Prompts.md)
-- [UML diagram](HotellBookingSystem/UML_HotellBookingSystem.pdf)
-- [Assignment PDF](HotellBookingSystem/Arbeidskrav2_HotellSystem.pdf)
+- Project README
+- AI prompt documentation
+- UML diagram
+- Assignment PDF
