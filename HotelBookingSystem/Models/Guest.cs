@@ -21,7 +21,7 @@ public abstract class Guest
     public string Name
     {
         get => _name;
-        private set
+        set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
