@@ -14,6 +14,6 @@ public class Suite : Room
 
     public override string DisplayRoomInfo()
     {
-        return $"Room {RoomNumber} - {RoomType}, Price: {PricePerNight}, Available: {IsAvailable}, Max guests: {MaxGuests}, Jacuzzi: {HasJacuzzi}, Lounge: {HasLounge}";
+        return $"Room {RoomNumber} - {RoomType}, Price: {PricePerNight}, Unoccupied now: {IsAvailable}, Max guests: {MaxGuests}, Jacuzzi: {HasJacuzzi}, Lounge: {HasLounge}";
     }
 }

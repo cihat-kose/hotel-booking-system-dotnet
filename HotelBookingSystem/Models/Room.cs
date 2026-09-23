@@ -14,7 +14,7 @@ public abstract class Room
     public string RoomNumber
     {
         get => _roomNumber;
-        set
+        private set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -62,15 +62,17 @@ public abstract class Room
     /// <summary>
     /// Marks the room as occupied.
     /// </summary>
-    public void CheckIn()
+    internal void CheckIn()
     {
+        if (!IsAvailable)
+            throw new InvalidOperationException("Room is currently occupied. Check out the current stay first.");
         IsAvailable = false;
     }
 
     /// <summary>
     /// Marks the room as available again.
     /// </summary>
-    public void CheckOut()
+    internal void CheckOut()
     {
         IsAvailable = true;
     }

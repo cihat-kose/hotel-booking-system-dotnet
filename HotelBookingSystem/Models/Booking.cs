@@ -2,197 +2,82 @@ using HotellBookingSystem.Payments;
 
 namespace HotellBookingSystem.Models;
 
-/// <summary>
-/// Simple lifecycle states for a booking.
-/// </summary>
-public enum BookingStatus
-{
-    Booked,
-    CheckedIn,
-    CheckedOut,
-    Cancelled
-}
+public enum BookingStatus { Booked, CheckedIn, CheckedOut, Cancelled }
 
-/// <summary>
-/// Represents one hotel booking.
-/// </summary>
+/// <summary>A paid reservation created only through Hotel.CreateBooking.</summary>
 public class Booking
 {
     private static int _bookingCounter;
-    private Room _room = null!;
-    private Guest _guest = null!;
-    private DateTime _checkInDate;
-    private DateTime _checkOutDate;
-    private IPayable _paymentMethod = null!;
+    private readonly decimal _totalPrice;
 
     public string BookingId { get; }
-
-    /// <summary>
-    /// The room connected to the booking.
-    /// </summary>
-    public Room Room
-    {
-        get => _room;
-        set => _room = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    /// <summary>
-    /// The guest who owns the booking.
-    /// </summary>
-    public Guest Guest
-    {
-        get => _guest;
-        set => _guest = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    /// <summary>
-    /// Check-in date for the booking.
-    /// </summary>
-    public DateTime CheckInDate
-    {
-        get => _checkInDate;
-        set
-        {
-            if (_checkOutDate != default && value >= _checkOutDate)
-            {
-                throw new ArgumentException("Check-in date must be earlier than check-out date.", nameof(value));
-            }
-
-            _checkInDate = value;
-        }
-    }
-
-    /// <summary>
-    /// Check-out date for the booking.
-    /// </summary>
-    public DateTime CheckOutDate
-    {
-        get => _checkOutDate;
-        set
-        {
-            if (_checkInDate != default && _checkInDate >= value)
-            {
-                throw new ArgumentException("Check-in date must be earlier than check-out date.", nameof(value));
-            }
-
-            _checkOutDate = value;
-        }
-    }
-
-    /// <summary>
-    /// Payment method used for this booking.
-    /// </summary>
-    public IPayable PaymentMethod
-    {
-        get => _paymentMethod;
-        set => _paymentMethod = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    /// <summary>
-    /// Indicates whether the booking has been paid.
-    /// </summary>
+    public Room Room { get; }
+    public Guest Guest { get; }
+    public DateTime CheckInDate { get; }
+    public DateTime CheckOutDate { get; }
+    public IPayable PaymentMethod { get; }
     public bool IsPaid { get; private set; }
-
-    /// <summary>
-    /// Current booking status.
-    /// </summary>
     public BookingStatus Status { get; private set; } = BookingStatus.Booked;
-
-    /// <summary>
-    /// True while the booking still blocks the room period.
-    /// </summary>
     public bool IsActive => Status is BookingStatus.Booked or BookingStatus.CheckedIn;
 
-    public Booking(Room room, Guest guest, DateTime checkInDate, DateTime checkOutDate, IPayable paymentMethod)
+    internal Booking(Room room, Guest guest, DateTime checkInDate, DateTime checkOutDate, IPayable paymentMethod)
     {
-        _bookingCounter++;
-        BookingId = $"BK{_bookingCounter:000}";
-
+        ArgumentNullException.ThrowIfNull(room);
+        ArgumentNullException.ThrowIfNull(guest);
+        ArgumentNullException.ThrowIfNull(paymentMethod);
+        ValidateDates(checkInDate, checkOutDate);
         Room = room;
         Guest = guest;
         CheckInDate = checkInDate;
         CheckOutDate = checkOutDate;
         PaymentMethod = paymentMethod;
-
-        Guest.AddBooking(this);
+        _totalPrice = guest.GetDiscount((checkOutDate - checkInDate).Days * room.PricePerNight);
+        BookingId = $"BK{Interlocked.Increment(ref _bookingCounter):000}";
     }
 
-    /// <summary>
-    /// Calculates the total price for the stay.
-    /// </summary>
-    public decimal CalculateTotalPrice()
+    internal static void ValidateDates(DateTime checkIn, DateTime checkOut)
     {
-        var numberOfNights = (CheckOutDate - CheckInDate).Days;
-        var basePrice = numberOfNights * Room.PricePerNight;
-        return Guest.GetDiscount(basePrice);
+        if (checkIn.TimeOfDay != TimeSpan.Zero || checkOut.TimeOfDay != TimeSpan.Zero)
+            throw new ArgumentException("Use whole dates without a time of day.");
+        if (checkIn >= checkOut)
+            throw new ArgumentException("Check-in date must be earlier than check-out date.");
     }
 
-    /// <summary>
-    /// Checks the guest into the booking.
-    /// </summary>
+    /// <summary>The price agreed at creation, unaffected by later room price changes.</summary>
+    public decimal CalculateTotalPrice() => _totalPrice;
+
     public void CheckIn()
     {
-        if (Status != BookingStatus.Booked)
-        {
-            throw new InvalidOperationException("Only booked reservations can be checked in.");
-        }
-
+        if (Status != BookingStatus.Booked || !IsPaid)
+            throw new InvalidOperationException("Only paid, booked reservations can be checked in.");
         Room.CheckIn();
         Status = BookingStatus.CheckedIn;
     }
 
-    /// <summary>
-    /// Checks the guest out and closes the booking.
-    /// </summary>
     public void CheckOut()
     {
         if (Status != BookingStatus.CheckedIn)
-        {
             throw new InvalidOperationException("Only checked-in bookings can be checked out.");
-        }
-
         Room.CheckOut();
         Guest.RemoveBooking(this);
         Status = BookingStatus.CheckedOut;
     }
 
-    /// <summary>
-    /// Cancels the booking before completion.
-    /// </summary>
+    /// <summary>Closes a reservation, including an active stay. No refund is simulated.</summary>
     public void Cancel()
     {
-        if (Status is BookingStatus.CheckedOut or BookingStatus.Cancelled)
-        {
+        if (!IsActive)
             throw new InvalidOperationException("The booking is already completed.");
-        }
-
         if (Status == BookingStatus.CheckedIn)
-        {
             Room.CheckOut();
-        }
-
         Guest.RemoveBooking(this);
         Status = BookingStatus.Cancelled;
     }
 
-    /// <summary>
-    /// Simulates payment processing for the booking.
-    /// </summary>
-    public bool ProcessPayment()
+    internal bool ProcessPayment()
     {
-        var totalPrice = CalculateTotalPrice();
-        var paymentSuccessful = PaymentMethod.ProcessPayment(totalPrice);
-
-        if (paymentSuccessful)
-        {
-            IsPaid = true;
-
-            if (Guest is VipGuest vipGuest)
-            {
-                vipGuest.AddBookingLoyaltyPoints();
-            }
-        }
-
-        return paymentSuccessful;
+        if (IsPaid) return true;
+        IsPaid = PaymentMethod.ProcessPayment(_totalPrice);
+        return IsPaid;
     }
 }

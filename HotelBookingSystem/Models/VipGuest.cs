@@ -17,7 +17,7 @@ public class VipGuest : Guest
         return basePrice * 0.85m;
     }
 
-    public void AddBookingLoyaltyPoints()
+    internal void AddBookingLoyaltyPoints()
     {
         LoyaltyPoints += 10;
     }
