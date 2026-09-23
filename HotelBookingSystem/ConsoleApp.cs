@@ -1,8 +1,8 @@
 using System.Globalization;
-using HotellBookingSystem.Models;
-using HotellBookingSystem.Payments;
+using HotelBookingSystem.Models;
+using HotelBookingSystem.Payments;
 
-namespace HotellBookingSystem;
+namespace HotelBookingSystem;
 
 /// <summary>The console adapter. Text streams also allow repeatable input/output tests.</summary>
 public sealed class ConsoleApp(TextReader input, TextWriter output)
@@ -22,12 +22,12 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
 
     public void Run()
     {
-        output.WriteLine("Hotel Gokstad - hotel reservation demo");
-        output.WriteLine("Explore rooms, create reservations, and simulate check-in/check-out.");
+        output.WriteLine("Hotel Gokstad - hotel booking demonstration");
+        output.WriteLine("Explore rooms, create bookings, and simulate check-in/check-out.");
         output.WriteLine("Sample rooms and guests are ready. All data resets on exit.");
         output.WriteLine("Payments are simulations only. Never enter real payment details.");
         output.WriteLine("Dates: dd.MM.yyyy. Start with 1. Show available rooms, then 2. Create booking.");
-        ShowSamples();
+        ShowSampleData();
         while (true)
         {
             output.WriteLine();
@@ -50,20 +50,20 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
                     case "1": ShowAvailableRooms(); break;
                     case "2": CreateBooking(); break;
                     case "3":
-                        _hotel.CheckInBooking(ReadRequired("BookingId"));
+                        _hotel.CheckInBooking(ReadRequired("Booking ID"));
                         output.WriteLine("Check-in completed successfully.");
                         break;
                     case "4":
-                        _hotel.CheckOutBooking(ReadRequired("BookingId"));
+                        _hotel.CheckOutBooking(ReadRequired("Booking ID"));
                         output.WriteLine("Check-out completed successfully.");
                         break;
-                    case "5": ShowBookings(); break;
+                    case "5": ShowGuestBookings(); break;
                     case "6": RegisterGuest(); break;
                     case "7":
-                        _hotel.CancelBooking(ReadRequired("BookingId"));
+                        _hotel.CancelBooking(ReadRequired("Booking ID"));
                         output.WriteLine("Booking cancelled. No real payment or refund took place.");
                         break;
-                    case "8": ShowSamples(); break;
+                    case "8": ShowSampleData(); break;
                     default: output.WriteLine("Invalid choice. Choose a menu number from 0 to 8."); break;
                 }
             }
@@ -91,13 +91,13 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
         return date;
     }
 
-    private void ShowSamples()
+    private void ShowSampleData()
     {
-        output.WriteLine("Rooms (Unoccupied now describes current check-in status, not date availability):");
+        output.WriteLine("Rooms (current occupancy, not date availability):");
         foreach (var room in _hotel.Rooms) output.WriteLine(room.DisplayRoomInfo());
         output.WriteLine("Registered guests:");
         foreach (var guest in _hotel.Guests)
-            output.WriteLine($"GuestId: {guest.GuestId}, Name: {guest.Name}, Type: {guest.GetType().Name}");
+            output.WriteLine($"Guest ID: {guest.GuestId}, Name: {guest.Name}, Type: {guest.GetType().Name}");
     }
 
     private void ShowAvailableRooms()
@@ -110,15 +110,15 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
 
     private void CreateBooking()
     {
-        ShowSamples();
-        var guestId = ReadRequired("GuestId");
-        var roomNumber = ReadRequired("RoomNumber");
+        ShowSampleData();
+        var guestId = ReadRequired("Guest ID");
+        var roomNumber = ReadRequired("Room number");
         var checkIn = ReadDate("check-in");
         var checkOut = ReadDate("check-out");
         output.WriteLine("Choose payment simulation (no real money or payment details):");
-        output.WriteLine("1 = Card DEMO success");
-        output.WriteLine("2 = Vipps DEMO success");
-        output.WriteLine("3 = Card DEMO decline");
+        output.WriteLine("1 = Card simulation approved");
+        output.WriteLine("2 = Vipps simulation approved");
+        output.WriteLine("3 = Card simulation declined");
         IPayable payment = ReadRequired("payment option") switch
         {
             "1" => new CardPayment(),
@@ -129,18 +129,18 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
         var booking = _hotel.CreateBooking(guestId, roomNumber, checkIn, checkOut, payment);
         output.WriteLine("Booking created successfully:");
         ShowBooking(booking);
-        output.WriteLine(booking.PaymentMethod.GetPaymentInfo());
+        output.WriteLine(booking.PaymentMethod.GetPaymentInformation());
     }
 
     private void ShowBooking(Booking booking) => output.WriteLine(
-        $"BookingId: {booking.BookingId}, Room: {booking.Room.RoomNumber}, " +
+        $"Booking ID: {booking.BookingId}, Room number: {booking.Room.RoomNumber}, " +
         $"Check-in: {booking.CheckInDate:dd.MM.yyyy}, Check-out: {booking.CheckOutDate:dd.MM.yyyy}, " +
         $"Total price: {booking.CalculateTotalPrice().ToString("0.00", CultureInfo.InvariantCulture)} NOK, " +
-        $"Paid (demo): {booking.IsPaid}, Status: {booking.Status}");
+        $"Paid (simulation): {booking.IsPaid}, Status: {booking.Status}");
 
-    private void ShowBookings()
+    private void ShowGuestBookings()
     {
-        var bookings = _hotel.GetGuestBookings(ReadRequired("GuestId"));
+        var bookings = _hotel.GetGuestBookings(ReadRequired("Guest ID"));
         if (bookings.Count == 0) output.WriteLine("You have no active bookings.");
         foreach (var booking in bookings) ShowBooking(booking);
     }
@@ -154,6 +154,6 @@ public sealed class ConsoleApp(TextReader input, TextWriter output)
         var email = ReadRequired("email");
         Guest guest = type == "1" ? new RegularGuest(name, email) : new VipGuest(name, email);
         _hotel.RegisterGuest(guest);
-        output.WriteLine($"Guest registered successfully. GuestId: {guest.GuestId}");
+        output.WriteLine($"Guest registered successfully. Guest ID: {guest.GuestId}");
     }
 }

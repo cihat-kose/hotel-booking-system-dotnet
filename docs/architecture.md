@@ -1,6 +1,6 @@
-# Current class diagram
+# Application architecture
 
-This Mermaid block is the editable source and renders directly on GitHub. It replaces the historical PDF, which showed mutable reservation terms and payment identifiers that no longer exist. `+` is public, `~` is internal. Only principal members are shown.
+The Mermaid diagram below is the maintained class model for the `HotelBookingSystem` application. `+` indicates public members and `~` indicates internal members. Only principal members are shown.
 
 ```mermaid
 classDiagram
@@ -23,10 +23,9 @@ classDiagram
     class Room {
         <<abstract>>
         +RoomNumber string
+        +RoomType string
         +PricePerNight decimal
         +IsAvailable bool
-        +RoomType string
-        +MaxGuests int
         ~CheckIn() void
         ~CheckOut() void
         +DisplayRoomInfo() string
@@ -84,7 +83,7 @@ classDiagram
     class IPayable {
         <<interface>>
         +ProcessPayment(decimal) bool
-        +GetPaymentInfo() string
+        +GetPaymentInformation() string
     }
     class CardPayment {
         +CardPayment(bool simulateSuccess)
@@ -99,10 +98,10 @@ classDiagram
     Guest <|-- VipGuest
     IPayable <|.. CardPayment
     IPayable <|.. VippsPayment
-    ConsoleApp --> Hotel : coordinates demo
+    ConsoleApp --> Hotel : coordinates sample application
     Hotel "1" o-- "0..*" Room : registered rooms
     Hotel "1" o-- "0..*" Guest : registered guests
-    Hotel "1" o-- "0..*" Booking : history
+    Hotel "1" o-- "0..*" Booking : booking history
     Guest "1" --> "0..*" Booking : active bookings
     Booking "0..*" --> "1" Room
     Booking "0..*" --> "1" Guest
@@ -110,4 +109,4 @@ classDiagram
     Booking --> BookingStatus
 ```
 
-Booking identity, room, guest, dates and payment reference are getter-only. Price is captured at creation. Status and paid flags have private setters. Guest identity/email and room number cannot be changed publicly; collection views cannot be mutated. Only `Hotel` constructs bookings. Room occupancy mutations and payment processing are internal. Card/Vipps classes are credential-free simulations with success enabled by default.
+All types use the `HotelBookingSystem` namespace family. Booking identity, dates, room, guest, payment method, and agreed price are fixed at creation. Card and Vipps implementations are credential-free payment simulations.

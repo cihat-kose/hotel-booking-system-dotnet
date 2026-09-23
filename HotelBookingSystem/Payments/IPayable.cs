@@ -1,7 +1,7 @@
-namespace HotellBookingSystem.Payments;
+namespace HotelBookingSystem.Payments;
 
 public interface IPayable
 {
     bool ProcessPayment(decimal amount);
-    string GetPaymentInfo();
+    string GetPaymentInformation();
 }

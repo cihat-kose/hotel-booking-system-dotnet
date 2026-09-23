@@ -1,6 +1,6 @@
-using HotellBookingSystem.Payments;
+using HotelBookingSystem.Payments;
 
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 public enum BookingStatus { Booked, CheckedIn, CheckedOut, Cancelled }
 

@@ -1,4 +1,4 @@
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 public class RegularGuest : Guest
 {

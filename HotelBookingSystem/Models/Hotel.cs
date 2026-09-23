@@ -1,6 +1,6 @@
-using HotellBookingSystem.Payments;
+using HotelBookingSystem.Payments;
 
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 /// <summary>
 /// Main class that manages rooms, guests, and bookings.
