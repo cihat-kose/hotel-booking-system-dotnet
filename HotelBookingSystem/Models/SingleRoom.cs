@@ -12,6 +12,6 @@ public class SingleRoom : Room
 
     public override string DisplayRoomInfo()
     {
-        return $"Room {RoomNumber} - {RoomType}, Price: {PricePerNight}, Available: {IsAvailable}, Max guests: {MaxGuests}, Desk: {HasDesk}";
+        return $"Room {RoomNumber} - {RoomType}, Price: {PricePerNight}, Unoccupied now: {IsAvailable}, Max guests: {MaxGuests}, Desk: {HasDesk}";
     }
 }

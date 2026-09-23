@@ -1,5 +1,4 @@
 using HotellBookingSystem.Payments;
-using System.Linq;
 
 namespace HotellBookingSystem.Models;
 
@@ -33,17 +32,17 @@ public class Hotel
     /// <summary>
     /// All rooms registered in the hotel.
     /// </summary>
-    public IReadOnlyList<Room> Rooms => _rooms;
+    public IReadOnlyList<Room> Rooms => _rooms.AsReadOnly();
 
     /// <summary>
     /// All registered guests.
     /// </summary>
-    public IReadOnlyList<Guest> Guests => _guests;
+    public IReadOnlyList<Guest> Guests => _guests.AsReadOnly();
 
     /// <summary>
     /// Log of all bookings in the system.
     /// </summary>
-    public IReadOnlyList<Booking> BookingHistory => _bookingHistory;
+    public IReadOnlyList<Booking> BookingHistory => _bookingHistory.AsReadOnly();
 
     public Hotel(string name)
     {
@@ -97,10 +96,7 @@ public class Hotel
     /// </summary>
     public List<Room> GetAvailableRooms(DateTime checkIn, DateTime checkOut)
     {
-        if (checkIn >= checkOut)
-        {
-            throw new ArgumentException("Check-in date must be earlier than check-out date.");
-        }
+        Booking.ValidateDates(checkIn, checkOut);
 
         return _rooms
             .Where(room => !_bookingHistory.Any(booking =>
@@ -125,10 +121,7 @@ public class Hotel
             throw new ArgumentException("Room number cannot be null or empty.", nameof(roomNumber));
         }
 
-        if (checkIn >= checkOut)
-        {
-            throw new ArgumentException("Check-in date must be earlier than check-out date.");
-        }
+        Booking.ValidateDates(checkIn, checkOut);
 
         if (payment is null)
         {
@@ -157,15 +150,24 @@ public class Hotel
             throw new InvalidOperationException("Room is not available in the selected period.");
         }
 
+        guest.EnsureBookingCapacity();
         var booking = new Booking(room, guest, checkIn, checkOut, payment);
-        var paymentSuccessful = booking.ProcessPayment();
-
-        if (!paymentSuccessful)
+        bool paymentSuccessful;
+        try
         {
-            guest.RemoveBooking(booking);
-            throw new InvalidOperationException("Payment failed.");
+            paymentSuccessful = booking.ProcessPayment();
         }
+        catch (Exception)
+        {
+            // A payment provider's exception may contain private data. Do not expose it.
+            throw new InvalidOperationException("Payment simulation failed. No booking was created.");
+        }
+        if (!paymentSuccessful)
+            throw new InvalidOperationException("Payment simulation declined. No booking was created.");
 
+        guest.AddBooking(booking);
+        if (guest is VipGuest vipGuest)
+            vipGuest.AddBookingLoyaltyPoints();
         _bookingHistory.Add(booking);
         return booking;
     }

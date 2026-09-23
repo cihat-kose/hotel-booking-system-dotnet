@@ -21,7 +21,7 @@ public abstract class Guest
     public string Name
     {
         get => _name;
-        set
+        private set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -38,7 +38,7 @@ public abstract class Guest
     public string Email
     {
         get => _email;
-        set
+        private set
         {
             if (string.IsNullOrWhiteSpace(value) || !value.Contains('@'))
             {
@@ -52,14 +52,13 @@ public abstract class Guest
     /// <summary>
     /// Active bookings for the guest.
     /// </summary>
-    public IReadOnlyList<Booking> ActiveBookings => _activeBookings;
+    public IReadOnlyList<Booking> ActiveBookings => _activeBookings.AsReadOnly();
 
     protected virtual int MaxActiveBookings => int.MaxValue;
 
     protected Guest(string name, string email)
     {
-        _guestCounter++;
-        GuestId = $"G{_guestCounter:000}";
+        GuestId = $"G{Interlocked.Increment(ref _guestCounter):000}";
         Name = name;
         Email = email;
     }
@@ -67,17 +66,14 @@ public abstract class Guest
     /// <summary>
     /// Adds a booking to the guest if the booking limit allows it.
     /// </summary>
-    public void AddBooking(Booking booking)
+    internal void AddBooking(Booking booking)
     {
         if (booking is null)
         {
             throw new ArgumentNullException(nameof(booking));
         }
 
-        if (_activeBookings.Count >= MaxActiveBookings)
-        {
-            throw new InvalidOperationException($"A guest can have a maximum of {MaxActiveBookings} active bookings.");
-        }
+        EnsureBookingCapacity();
 
         _activeBookings.Add(booking);
     }
@@ -85,7 +81,7 @@ public abstract class Guest
     /// <summary>
     /// Removes a booking from the guest's active list.
     /// </summary>
-    public void RemoveBooking(Booking booking)
+    internal void RemoveBooking(Booking booking)
     {
         if (booking is null)
         {
@@ -99,4 +95,10 @@ public abstract class Guest
     /// Calculates the price after any guest discount.
     /// </summary>
     public abstract decimal GetDiscount(decimal basePrice);
+
+    internal void EnsureBookingCapacity()
+    {
+        if (_activeBookings.Count >= MaxActiveBookings)
+            throw new InvalidOperationException($"A guest can have a maximum of {MaxActiveBookings} active bookings.");
+    }
 }
