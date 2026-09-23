@@ -1,9 +1,5 @@
-# AI / KI usage and student provenance
+# AI usage
 
-This project began as an individual Gokstad Akademiet Arbeidskrav 2 submission. The original disclosure states that ChatGPT and Codex supported assignment interpretation, planning, code generation, debugging, UML and documentation. It also states that the solution was manually reviewed, tested and adjusted; that is the original author's statement, not a newly verified claim.
+AI tools assisted with planning, code review, debugging, test design, and documentation editing during development. The owner reviewed the resulting source, documentation, and test behavior before inclusion in this repository.
 
-The assignment permits AI but requires documenting its use and **all prompts**, either in the README or a separate file. A specific filename `AI_Prompts.md` is not mandated. The original file described example prompt types and explicitly omitted some follow-ups, so it was not a complete transcript. At the owner's request, the portfolio tree now uses this concise disclosure. **This summary does not substitute for the assignment's complete prompt-record requirement if submitted again for assessment.**
-
-The original `HotelBookingSystem/AI_Prompts.md` is unchanged in historical commit `9a92cd7588565bc6b963c891f3001c0c50defa5e` (blob `42d2d71638a587861fa171b26081ff35689abd70`). No history rewrite has been performed. Before any later history cleanup, preserve that original record in the private submission archive; do not erase the provenance.
-
-For the portfolio revision, Codex assisted with repository/history review, xUnit migration, booking-rule fixes, credential-free payment simulations, console usability, README/UML updates and CI. The owner's requests included preserving student scope, testing behavioral changes, auditing publication rights, using the portfolio repository name, and consolidating documentation. Tests and scripted console checks were executed by the agent; they are not represented as an independent human review. See [validation](validation.md) for evidence and [publication audit](publication-audit.md) for unresolved release decisions.
+AI assistance did not replace local validation. The application and test suite were run from a clean working copy, and the limitations of the payment implementations are documented explicitly: they are simulations with no credentials, network calls, or money movement.

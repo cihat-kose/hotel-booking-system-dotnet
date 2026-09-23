@@ -1,4 +1,4 @@
-using HotellBookingSystem;
+using HotelBookingSystem;
 
 namespace HotelBookingSystem.Tests;
 
@@ -10,13 +10,13 @@ public class ConsoleAppTests
     [InlineData("1\n31.02.2030\n0\n", "Invalid date format")]
     [InlineData("1\n\n0\n", "is required")]
     [InlineData("1\n12.06.2030\n10.06.2030\n0\n", "earlier than")]
-    [InlineData("2\n\n0\n", "GuestId is required")]
+    [InlineData("2\n\n0\n", "Guest ID is required")]
     [InlineData("2\nG001\n101\n10.06.2030\n12.06.2030\n9\n0\n", "Invalid payment option")]
     [InlineData("3\nmissing\n0\n", "Booking not found")]
-    [InlineData("4\n\n0\n", "BookingId is required")]
+    [InlineData("4\n\n0\n", "Booking ID is required")]
     [InlineData("6\n9\n0\n", "Invalid guest type")]
     [InlineData("6\n1\nDemo\ninvalid\n0\n", "Email must contain")]
-    public void InvalidInputReturnsToMenu(string input, string message)
+    public void Run_WhenInputIsInvalid_DisplaysErrorAndReturnsToMenu(string input, string message)
     {
         var output = new StringWriter();
         new ConsoleApp(new StringReader(input), output).Run();
@@ -30,7 +30,7 @@ public class ConsoleAppTests
     [InlineData("1\n")]
     [InlineData("2\n")]
     [InlineData("6\n1\n")]
-    public void EndOfInputExitsNormally(string input)
+    public void Run_WhenInputEnds_ExitsNormally(string input)
     {
         var output = new StringWriter();
         new ConsoleApp(new StringReader(input), output).Run();
@@ -38,13 +38,13 @@ public class ConsoleAppTests
     }
 
     [Fact]
-    public void StartupShowsSampleIdentifiersAndNoTestsOrPaymentDataPrompts()
+    public void Run_OnStartup_ShowsSampleIdentifiersWithoutTestOrSensitivePaymentPrompts()
     {
         var output = new StringWriter();
         new ConsoleApp(new StringReader("0\n"), output).Run();
         var text = output.ToString();
         Assert.Contains("Room 101", text);
-        Assert.Contains("GuestId: G", text);
+        Assert.Contains("Guest ID: G", text);
         Assert.Contains("dd.MM.yyyy", text);
         Assert.Contains("Payments are simulations only", text);
         Assert.DoesNotContain("PASSED", text);

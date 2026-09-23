@@ -1,4 +1,4 @@
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 /// <summary>
 /// Base class for guests in the hotel system.

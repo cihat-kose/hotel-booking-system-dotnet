@@ -1,4 +1,4 @@
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 public class Suite : Room
 {
@@ -6,7 +6,7 @@ public class Suite : Room
     public bool HasLounge { get; set; }
 
     public Suite(string roomNumber, bool hasJacuzzi, bool hasLounge, decimal pricePerNight = 3500m)
-        : base(roomNumber, "Suite", pricePerNight, 4)
+        : base(roomNumber, "Suite", pricePerNight)
     {
         HasJacuzzi = hasJacuzzi;
         HasLounge = hasLounge;
@@ -14,6 +14,6 @@ public class Suite : Room
 
     public override string DisplayRoomInfo()
     {
-        return $"Room {RoomNumber} - {RoomType}, Price: {PricePerNight}, Unoccupied now: {IsAvailable}, Max guests: {MaxGuests}, Jacuzzi: {HasJacuzzi}, Lounge: {HasLounge}";
+        return $"Room {RoomNumber} - {RoomType}, Price per night: {PricePerNight}, Unoccupied now: {IsAvailable}, Jacuzzi: {HasJacuzzi}, Lounge: {HasLounge}";
     }
 }

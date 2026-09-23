@@ -1,4 +1,4 @@
-# C# concepts for a Java interview
+# C# and Java design notes
 
 | In this project | C# | Java counterpart and explanation |
 | --- | --- | --- |
@@ -15,6 +15,6 @@
 | Nullable references | `IPayable?`, nullable analysis | Java annotations such as `@Nullable`; C# compiler analysis is enabled here. `ThrowIfNull` still provides runtime protection. |
 | IDs | `Interlocked.Increment` | `AtomicInteger.incrementAndGet`. Atomic counters do not make the whole hotel/collections thread-safe. |
 
-An interview explanation: `Hotel.CreateBooking` validates registration, dates, overlaps and capacity first. It constructs an unregistered booking, captures the price, and tries the payment simulation. Only success adds it to the guest/history and awards VIP points. A failure therefore cannot leave a ghost reservation. This is an in-memory sequence for a single-threaded console, not a distributed transaction or a real payment guarantee.
+`Hotel.CreateBooking` validates registration, dates, overlaps, and booking capacity first. It constructs an unregistered booking, captures the price, and tries the payment simulation. Only success adds it to the guest history and awards VIP points. A failure therefore cannot leave a ghost booking. This is an in-memory sequence for a single-threaded console, not a distributed transaction or a real payment guarantee.
 
-Date availability and physical occupancy answer different questions. Adjacent reservations share a boundary without overlapping; a room can be reserved for later while occupied now. Check-in separately prevents a second simultaneous occupant. The demo intentionally does not enforce the current calendar date.
+Date availability and physical occupancy answer different questions. Adjacent bookings share a boundary without overlapping; a room can be booked for later while occupied now. Check-in separately prevents a second simultaneous occupant. The demonstration intentionally does not enforce the current calendar date.

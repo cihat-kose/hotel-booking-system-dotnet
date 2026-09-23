@@ -1,4 +1,4 @@
-namespace HotellBookingSystem.Models;
+namespace HotelBookingSystem.Models;
 
 /// <summary>
 /// Base class for all room types in the hotel.
@@ -49,14 +49,11 @@ public abstract class Room
     /// </summary>
     public bool IsAvailable { get; private set; } = true;
 
-    public int MaxGuests { get; protected set; }
-
-    protected Room(string roomNumber, string roomType, decimal pricePerNight, int maxGuests)
+    protected Room(string roomNumber, string roomType, decimal pricePerNight)
     {
         RoomNumber = roomNumber;
         RoomType = roomType;
         PricePerNight = pricePerNight;
-        MaxGuests = maxGuests;
     }
 
     /// <summary>
